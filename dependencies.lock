@@ -1,4 +1,12 @@
 dependencies:
+  agent_dock_ui:
+    dependencies:
+    - name: lvgl_port
+      path: ../components/lvgl_port
+    source:
+      path: agent_dock_ui
+      type: local
+    version: '*'
   board:
     dependencies:
     - name: espressif/esp_lcd_axs15231b
@@ -72,11 +80,12 @@ dependencies:
       type: local
     version: '*'
 direct_dependencies:
+- agent_dock_ui
 - board
 - espressif/esp_lcd_axs15231b
 - espressif/esp_lcd_touch
 - lvgl/lvgl
 - lvgl_port
-manifest_hash: d5fd8474a7d0303dfa01a6c5cffeddc12d04e5b2fff98f46197c5c36831fd26c
+manifest_hash: 8b84895948850098302a191e150bd0be2a155eb6a41ea83a0e27001e33fee3a9
 target: esp32s3
 version: 3.0.0

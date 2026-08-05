@@ -1,0 +1,6 @@
+## Required: marks `agent_dock_ui/` as an ESP-IDF component so the Component
+## Manager recognises it and propagates its INCLUDE_DIRS to anything that
+## REQUIRES it (e.g. main). Without this file CMake treats the directory
+## as just a folder of sources, not a component, and include-path propagation
+## breaks.
+## Dependencies are declared in CMakeLists.txt via `REQUIRES lvgl_port`.
