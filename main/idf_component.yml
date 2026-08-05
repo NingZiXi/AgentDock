@@ -1,0 +1,5 @@
+dependencies:
+  board:
+    path: ../components/board
+  lvgl_port:
+    path: ../components/lvgl_port

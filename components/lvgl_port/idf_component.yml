@@ -1,0 +1,7 @@
+dependencies:
+  board:
+    path: ../board
+    public: true
+  lvgl/lvgl:
+    version: "9.4.*"
+    public: true

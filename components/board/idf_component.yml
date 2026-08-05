@@ -1,0 +1,6 @@
+dependencies:
+  espressif/esp_lcd_axs15231b:
+    version: "2.1.*"
+    public: true
+  espressif/esp_lcd_touch:
+    version: "^1"
