@@ -5,6 +5,7 @@
 #include "bsp/bsp.h"
 #include "lvgl_port.h"
 #include "ui.h"
+#include "lvgl.h"
 
 static const char *TAG = "main";
 
@@ -16,6 +17,8 @@ extern "C" void app_main(void)
 
     ui_init();                                           /* create EEZ screens/objects */
     lv_timer_create((lv_timer_cb_t)ui_tick, 33, NULL);   /* tick EEZ flow each LVGL frame */
+
+    lv_sysmon_show_performance(lvgl_port_get_display());
 
     ESP_LOGI(TAG, "EEZ UI running.");
 }
