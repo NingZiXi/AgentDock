@@ -26,6 +26,19 @@ static esp_lcd_panel_io_handle_t s_tp_io   = NULL;
 static esp_lcd_touch_handle_t    s_touch   = NULL;
 static bool                      s_inited  = false;
 
+static void touch_process_points_cb(esp_lcd_touch_handle_t tp,
+                                    uint16_t *x, uint16_t *y,
+                                    uint16_t *strength,
+                                    uint8_t *point_num,
+                                    uint8_t max_point_num)
+{
+    /* IC raw axes are both mirrored — flip both. */
+    for (int i = 0; i < *point_num; i++) {
+        x[i] = tp->config.x_max - x[i];
+        y[i] = tp->config.y_max - y[i];
+    }
+}
+
 esp_err_t bsp_touch_init(esp_lcd_touch_handle_t *out_touch)
 {
     if (out_touch == NULL) {
@@ -62,8 +75,9 @@ esp_err_t bsp_touch_init(esp_lcd_touch_handle_t *out_touch)
         .y_max        = BSP_LCD_H_RES,
         .rst_gpio_num = BSP_PIN_TOUCH_RST,
         .int_gpio_num = BSP_PIN_TOUCH_INT,
+        .process_coordinates = touch_process_points_cb,
         .levels = { .reset = 0, .interrupt = 0 },
-        .flags  = { .swap_xy = 1, .mirror_x = 1, .mirror_y = 0 },
+        .flags  = { .swap_xy = 0, .mirror_x = 0, .mirror_y = 0 },
     };
     ESP_LOGI(TAG, "Initialize touch controller AXS15231B");
     ESP_ERROR_CHECK(esp_lcd_touch_new_i2c_axs15231b(s_tp_io, &tp_cfg, &s_touch));
