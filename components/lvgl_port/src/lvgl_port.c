@@ -53,14 +53,44 @@ static bool notify_lvgl_flush_ready(esp_lcd_panel_io_handle_t panel_io,
     return false;
 }
 
+/* Scratch buffer for software-rotation output. */
+static lv_color16_t *s_rot_buf = NULL;
+static size_t         s_rot_buf_sz = 0;
+
 static void lvgl_flush_cb(lv_display_t *disp, const lv_area_t *area, uint8_t *px_map)
 {
     esp_lcd_panel_handle_t panel = lv_display_get_user_data(disp);
-    int x1 = area->x1, x2 = area->x2;
-    int y1 = area->y1, y2 = area->y2;
-    /* SPI LCD is big-endian — swap RGB bytes */
-    lv_draw_sw_rgb565_swap(px_map, (x2 + 1 - x1) * (y2 + 1 - y1));
-    esp_lcd_panel_draw_bitmap(panel, x1, y1, x2 + 1, y2 + 1, px_map);
+
+    const int x1 = area->x1, x2 = area->x2;
+    const int y1 = area->y1, y2 = area->y2;
+    const int src_w = x2 - x1 + 1;
+    const int src_h = y2 - y1 + 1;
+    const size_t needed = (size_t)src_w * (size_t)src_h * sizeof(lv_color16_t);
+
+    if (s_rot_buf == NULL || needed > s_rot_buf_sz) {
+        free(s_rot_buf);
+        s_rot_buf = heap_caps_malloc(needed, MALLOC_CAP_SPIRAM);
+        assert(s_rot_buf);
+        s_rot_buf_sz = needed;
+    }
+
+    /* Rotate 90° CW: src(sx,sy) → dst(py=sx, px=src_h-1-sy) */
+    const lv_color16_t *src = (const lv_color16_t *)px_map;
+    lv_color16_t       *dst = s_rot_buf;
+    for (int py = 0; py < src_w; py++) {
+        for (int px = 0; px < src_h; px++) {
+            dst[py * src_h + px] = src[(src_h - 1 - px) * src_w + py];
+        }
+    }
+
+    lv_draw_sw_rgb565_swap((uint8_t *)dst, (size_t)src_w * src_h);
+
+    const int phys_x_start = BSP_LCD_H_RES - 1 - y2;
+    const int phys_x_end   = BSP_LCD_H_RES - 1 - y1 + 1;
+    const int phys_y_start = x1;
+    const int phys_y_end   = x2 + 1;
+    esp_lcd_panel_draw_bitmap(panel, phys_x_start, phys_y_start,
+                              phys_x_end, phys_y_end, dst);
 }
 
 static void lvgl_tick_cb(void *arg)
@@ -118,8 +148,8 @@ esp_err_t lvgl_port_init(void)
     ESP_LOGI(TAG, "Initialize LVGL");
     lv_init();
 
-    g_display = lv_display_create(BSP_LCD_H_RES, BSP_LCD_V_RES);
-    size_t buf_sz = BSP_LCD_H_RES * BSP_LCD_DRAW_BUFF_HEIGHT * sizeof(lv_color16_t);
+    g_display = lv_display_create(BSP_LCD_V_RES, BSP_LCD_H_RES);
+    size_t buf_sz = BSP_LCD_V_RES * BSP_LCD_DRAW_BUFF_HEIGHT * sizeof(lv_color16_t);
     g_buf1 = heap_caps_malloc(buf_sz, MALLOC_CAP_SPIRAM);
     g_buf2 = heap_caps_malloc(buf_sz, MALLOC_CAP_SPIRAM);
     assert(g_buf1 && g_buf2);
@@ -136,7 +166,7 @@ esp_err_t lvgl_port_init(void)
     ESP_ERROR_CHECK(esp_timer_create(&tick_args, &g_tick_timer));
     ESP_ERROR_CHECK(esp_timer_start_periodic(g_tick_timer, LVGL_TICK_PERIOD_MS * 1000));
 
-    /* 4) Flush-ready callback (SPI DMA done → LVGL) */
+    /* 4) Flush-ready callback */
     const esp_lcd_panel_io_callbacks_t cbs = {
         .on_color_trans_done = notify_lvgl_flush_ready,
     };
@@ -181,6 +211,9 @@ esp_err_t lvgl_port_deinit(void)
 
     free(g_buf1);
     free(g_buf2);
+    free(s_rot_buf);
+    s_rot_buf = NULL;
+    s_rot_buf_sz = 0;
     g_buf1 = g_buf2 = NULL;
     g_display = NULL;
 
