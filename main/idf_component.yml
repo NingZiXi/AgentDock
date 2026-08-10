@@ -5,3 +5,5 @@ dependencies:
     path: ../components/lvgl_port
   agent_dock_ui:
     path: ../agent_dock_ui
+  espressif/esp_lv_eaf_player: ^0.3.0
+  joltwallet/littlefs: ^1.22.3

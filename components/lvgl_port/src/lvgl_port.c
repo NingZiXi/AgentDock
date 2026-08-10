@@ -53,7 +53,7 @@ static bool notify_lvgl_flush_ready(esp_lcd_panel_io_handle_t panel_io,
     return false;
 }
 
-/* Scratch buffer for software-rotation output. */
+// 软件 90° CW 旋转输出缓冲
 static lv_color16_t *s_rot_buf = NULL;
 static size_t         s_rot_buf_sz = 0;
 
@@ -74,7 +74,7 @@ static void lvgl_flush_cb(lv_display_t *disp, const lv_area_t *area, uint8_t *px
         s_rot_buf_sz = needed;
     }
 
-    /* Rotate 90° CW: src(sx,sy) → dst(py=sx, px=src_h-1-sy) */
+    // 90° CW: src(sx,sy) → dst(py=sx, px=src_h-1-sy)
     const lv_color16_t *src = (const lv_color16_t *)px_map;
     lv_color16_t       *dst = s_rot_buf;
     for (int py = 0; py < src_w; py++) {

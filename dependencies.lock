@@ -1,8 +1,6 @@
 dependencies:
   agent_dock_ui:
-    dependencies:
-    - name: lvgl_port
-      path: ../components/lvgl_port
+    dependencies: []
     source:
       path: agent_dock_ui
       type: local
@@ -56,10 +54,61 @@ dependencies:
       registry_url: https://components.espressif.com/
       type: service
     version: 1.2.1
+  espressif/esp_lv_eaf_player:
+    component_hash: 6fa8ddc9724f1718a1d5718add878ff6305928e0379e702b395e02d8c208ac5d
+    dependencies:
+    - name: espressif/cmake_utilities
+      registry_url: https://components.espressif.com
+      require: private
+      version: 0.*
+    - name: espressif/esp_new_jpeg
+      registry_url: https://components.espressif.com
+      require: private
+      version: 1.*
+    - name: idf
+      require: private
+      version: '>=5.5'
+    - name: lvgl/lvgl
+      registry_url: https://components.espressif.com
+      require: private
+      version: '>=8,<10'
+    source:
+      registry_url: https://components.espressif.com/
+      type: service
+    version: 0.3.0
+  espressif/esp_new_jpeg:
+    component_hash: e1e7e6991193c41ed6c9fc386702aa7821433319e7aa9c3147cd3236310cd69c
+    dependencies: []
+    source:
+      registry_url: https://components.espressif.com
+      type: service
+    targets:
+    - esp32
+    - esp32s2
+    - esp32s3
+    - esp32s31
+    - esp32p4
+    - esp32c2
+    - esp32c3
+    - esp32c5
+    - esp32c6
+    - esp32c61
+    - esp32h4
+    version: 1.0.2
   idf:
     source:
       type: idf
     version: 6.0.2
+  joltwallet/littlefs:
+    component_hash: 3af20a3d75c49db9dc2286fd50862c34055c9f578419ad1f2bf7ed3ed01391fe
+    dependencies:
+    - name: idf
+      require: private
+      version: '>=5.0'
+    source:
+      registry_url: https://components.espressif.com/
+      type: service
+    version: 1.22.3
   lvgl/lvgl:
     component_hash: 17e68bfd21f0edf4c3ee838e2273da840bf3930e5dbc3bfa6c1190c3aed41f9f
     dependencies: []
@@ -84,8 +133,10 @@ direct_dependencies:
 - board
 - espressif/esp_lcd_axs15231b
 - espressif/esp_lcd_touch
+- espressif/esp_lv_eaf_player
+- joltwallet/littlefs
 - lvgl/lvgl
 - lvgl_port
-manifest_hash: 8b84895948850098302a191e150bd0be2a155eb6a41ea83a0e27001e33fee3a9
+manifest_hash: b38c8e0f74364dacb79afe55d8f226f6402a9de154022d4664fc915b90c543c6
 target: esp32s3
 version: 3.0.0
