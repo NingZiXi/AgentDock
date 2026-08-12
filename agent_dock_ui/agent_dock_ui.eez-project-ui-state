@@ -21,6 +21,7 @@
           },
           {
             "type": "border",
+            "selected": 2,
             "size": 240,
             "location": "right",
             "children": [
@@ -664,7 +665,8 @@
                       "component": "bitmaps",
                       "enableClose": false
                     }
-                  ]
+                  ],
+                  "active": true
                 },
                 {
                   "type": "tabset",
@@ -1103,12 +1105,14 @@
     "[agent_dock_ui.eez-project]:/userPages/0[flow-state]": {
       "selectionFront": {},
       "selectionBack": {
-        "0": {}
+        "0": {
+          "1": {}
+        }
       },
       "transform": {
         "translate": {
           "x": -261.3727272727274,
-          "y": -15.211363636363615
+          "y": -115.21136363636361
         },
         "scale": 0.9
       },
@@ -1138,5 +1142,6 @@
   "showInactiveFlowsInDebugger": true,
   "globalFlowZoom": true,
   "flowZoom": 0.9,
-  "implementationLanguage": "C"
+  "implementationLanguage": "C",
+  "openDialogDefaultPath": "C:\\Users\\Hszn\\Desktop\\图片\\1786291662999.gif"
 }
