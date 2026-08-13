@@ -63,7 +63,7 @@ env/
 
 # Editor / IDE local configuration
 .vscode/
-
+.cache
 # Language Servers
 # (paths vary per dev machine — do not commit these)
 .clangd
