@@ -7,7 +7,6 @@
 #include "bsp/bsp.h"
 #include "lvgl_port.h"
 #include "ui.h"
-#include "lvgl.h"
 #include "lv_eaf.h"
 
 static const char *TAG = "main";
